@@ -50,19 +50,26 @@ namespace CodeChallenge2Solution
 
             foreach (var date in dates)
             {
-                var logEntriesOnThisDate = logEntries.Where(x => x.date == date.Key);            
-                Console.WriteLine($"{date.Key} has {logEntriesOnThisDate.Count()} number of entries in total:");
+                var logEntriesOnThisDate = logEntries.Where(x => x.date == date.Key);
                 var times = logEntriesOnThisDate.GroupBy(log => log.time).ToList();
-                
+             
                 foreach (var time in times)
                 {
                     var hourOfGroupedLogs = time.Key;
                     var countOfLogsByHour = time.Count();
                     var counter = string.Concat(Enumerable.Repeat('#', time.Count()));
-
                     Console.WriteLine($"{hourOfGroupedLogs}:  {counter}  {countOfLogsByHour}");
                 }
             }
+
+            foreach (var date in dates)
+            {
+                var logEntriesOnThisDate = logEntries.Where(x => x.date == date.Key);
+                var times = logEntriesOnThisDate.GroupBy(log => log.time).ToList();
+                var counter = string.Concat(Enumerable.Repeat('.', logEntriesOnThisDate.Count()));
+                Console.WriteLine($"On the {date.Key} there were:  {counter}  ");
+            }
+
         }
     }
 }
