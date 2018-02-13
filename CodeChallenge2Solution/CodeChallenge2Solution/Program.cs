@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 
 namespace CodeChallenge2Solution
 {
+    using System.Threading;
 
     public class BusiestHour
     {
@@ -18,7 +19,6 @@ namespace CodeChallenge2Solution
     public class Program
     {
         public static string logFile = @"C:\git\Code_Challenge2\log.file";
-
 
         public static void Main()
         {
@@ -41,8 +41,14 @@ namespace CodeChallenge2Solution
                 {
                     string[] splitBySpace = line.Split(' ');
                     string[] splitByColon = splitBySpace[1].Split(':');
+
+                    var time = splitByColon[0];
+                    if (time.StartsWith("0"))
+                    {
+                        time = time.Remove(0, 1);
+                    }
                     logEntries.Add(
-                            new EventLogEntry { date = splitBySpace[0], time = splitByColon[0]}
+                            new EventLogEntry { date = splitBySpace[0], time = time}
                         );
                 }
             }
@@ -50,24 +56,33 @@ namespace CodeChallenge2Solution
 
             foreach (var date in dates)
             {
-                var logEntriesOnThisDate = logEntries.Where(x => x.date == date.Key);
-                var times = logEntriesOnThisDate.GroupBy(log => log.time).ToList();
-             
-                foreach (var time in times)
+                var logEntriesOnThisDate = logEntries.Where(x => x.date == date.Key).ToList();
+                Console.WriteLine($"{date.Key}");
+
+                //first loop through all of the hours
+                for (int hour = 0; hour < 24; hour++)
                 {
-                    var hourOfGroupedLogs = time.Key;
-                    var countOfLogsByHour = time.Count();
-                    var counter = string.Concat(Enumerable.Repeat('#', time.Count()));
-                    Console.WriteLine($"{hourOfGroupedLogs}:  {counter}  {countOfLogsByHour}");
+                    var logEntriesForThisHour = logEntriesOnThisDate.Where(x => x.time == hour.ToString()).ToList();
+                    if (logEntriesForThisHour.Any())
+                    {
+                        var countOfLogsByHour = logEntriesForThisHour.Count;
+                        var counter = string.Concat(Enumerable.Repeat('#', logEntriesForThisHour.Count));
+                        Console.WriteLine($"{hour}:  {counter}  {countOfLogsByHour}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"{hour}: no logs");
+                    }
                 }
             }
 
             foreach (var date in dates)
             {
                 var logEntriesOnThisDate = logEntries.Where(x => x.date == date.Key);
-                var times = logEntriesOnThisDate.GroupBy(log => log.time).ToList();
+                var numberOfLogsPerDate = logEntriesOnThisDate.Count();
                 var counter = string.Concat(Enumerable.Repeat('.', logEntriesOnThisDate.Count()));
-                Console.WriteLine($"On the {date.Key} there were:  {counter}  ");
+
+                Console.WriteLine($"On {date.Key}:  {counter} - {numberOfLogsPerDate} ");
             }
 
         }
